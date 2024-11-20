@@ -1,4 +1,5 @@
 Code for pattern printer
+2nd time modifed:
 
 public class PublicPrinter {
     public static void main(String[] args) {
