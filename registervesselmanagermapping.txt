@@ -1,0 +1,926 @@
+RegisterVesselManagerMapping.aspx
+
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="RegisterVesselManagerMapping.aspx.cs" Inherits="Registers_RegisterPrimaryManager" %>
+
+<%@ Import Namespace="SouthNests.Phoenix.Registers" %>
+<%@ Register TagPrefix="telerik" Namespace="Telerik.Web.UI" Assembly="Telerik.Web.UI" %>
+<%@ Register TagPrefix="eluc" TagName="TabStrip" Src="~/UserControls/UserControlTabsTelerik.ascx" %>
+<%@ Register TagPrefix="eluc" TagName="Error" Src="~/UserControls/UserControlErrorMessage.ascx" %>
+<%@ Register TagPrefix="eluc" TagName="Number" Src="~/UserControls/UserControlMaskNumber.ascx" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <telerik:RadCodeBlock ID="Radcodeblock1" runat="server">
+        <%: Scripts.Render("~/bundles/js") %>
+        <%: Styles.Render("~/bundles/css") %>
+    </telerik:RadCodeBlock>
+    <style type="text/css">
+        /*.auto-style1 {
+            height: 217px;
+        }*/
+
+    </style>
+
+</head>
+<body> 
+    <form id="formPrimaryManager" runat="server" class="auto-style1">
+        <telerik:RadScriptManager runat="server" ID="RadScriptManager1"></telerik:RadScriptManager>
+        <telerik:RadSkinManager ID="RadSkinManager1" runat="server" />
+        <telerik:RadAjaxPanel ID="RadAjaxPanel1" runat="server" >
+            <asp:Button ID="cmdHiddenSubmit" runat="server" Text="cmdHiddenSubmit" OnClick="cmdHiddenSubmit_Click"
+                    CssClass="hidden" />
+            <eluc:TabStrip ID="VesselManagerMappingTab"  OnTabStripCommand="VesselManagerMapping_TabStripCommand" runat="server"></eluc:TabStrip>
+            <eluc:Error ID="ucError" runat="server" Text="" Visible="false"></eluc:Error>
+            <telerik:RadGrid ID="gvPrimaryManager" runat="server" ShowHeader="true" ShowFooter="false" OnNeedDataSource="gvPrimaryManager_NeedDataSource" 
+                OnItemDataBound="gvPrimaryManager_ItemDataBound" OnItemCommand="gvPrimaryManager_ItemCommand" AllowCustomPaging="true" 
+                AllowSorting="true" AllowPaging="true" PageSize="10" CellSpacing="0" GridLines="None"  OnSortCommand="gvPrimaryManager_SortCommand">
+                <SortingSettings EnableSkinSortStyles="true" ></SortingSettings>
+                <MasterTableView InsertItemPageIndexAction="ShowItemOnCurrentPage" ShowHeadersWhenNoRecords="true"  HeaderStyle-Font-Bold="true" DataKeyNames="FLDMAPPINGID" AutoGenerateColumns="false">                   
+                    <NoRecordsTemplate>
+                        <table width="100%" border="0">
+                            <tr>        
+                                <td align="center">
+                                    <telerik:RadLabel ID="noRecordFound" runat="server" Text="No Records Found" Font-Size="Larger" Font-Bold="true"></telerik:RadLabel>
+                                </td>
+                            </tr>
+                        </table>
+                    </NoRecordsTemplate>
+                    <Columns>
+                        <telerik:GridTemplateColumn HeaderText="S.No" HeaderStyle-HorizontalAlign="Center" HeaderStyle-Width="56px">
+                            <ItemStyle Wrap="False" HorizontalAlign="Center" Width="56px"></ItemStyle>
+                            <ItemTemplate>
+                                <telerik:RadLabel ID="lblSNoPrimaryManager" runat="server" Text='<%# Container.DataSetIndex + 1 %>'></telerik:RadLabel>
+                            </ItemTemplate>                           
+                        </telerik:GridTemplateColumn>
+                        <telerik:GridTemplateColumn HeaderText="Primary Manager">
+                            <ItemStyle Wrap="false" HorizontalAlign="left"></ItemStyle>
+                            <ItemTemplate>
+                                <telerik:RadLabel ID="lblPrimaryManager" Text='<%# DataBinder.Eval(Container,"DataItem.FLDNAME") %>' runat="server"></telerik:RadLabel>
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+                        <telerik:GridTemplateColumn HeaderText="Company">
+                            <ItemStyle Wrap="false" HorizontalAlign="left"></ItemStyle>
+                            <ItemTemplate>
+                                <telerik:RadLabel ID="lblCompanyNamePrimaryManager" Text='<%# DataBinder.Eval(Container,"DataItem.FLDSHORTCODE") %>' runat="server"></telerik:RadLabel>
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+                        <telerik:GridTemplateColumn HeaderText="Action">
+                            <HeaderStyle HorizontalAlign="Center" VerticalAlign="Middle"></HeaderStyle>
+                            <HeaderTemplate>
+                                <telerik:RadLabel ID="lblActionHeader" runat="server">
+                                    Action
+                                </telerik:RadLabel>
+                            </HeaderTemplate>
+                            <ItemStyle Wrap="False" HorizontalAlign="Center"></ItemStyle>
+                            <ItemTemplate>
+                                <asp:LinkButton runat="server" AlternateText="Edit" ToolTip="Edit" Width="20PX" Height="20PX" 
+                                                CommandName="UPDATE" CommandArgument='<%# Container.DataSetIndex %>' ID="cmdEdit">
+                                    <span class="icon"><i class="fas fa-edit"></i></span>
+                                </asp:LinkButton>
+                                <asp:LinkButton runat="server" AlternateText="Delete" ToolTip="Delete" Width="20PX" Height="20PX" 
+                                                CommandName="DELETE" CommandArgument="<%# Container.DataSetIndex %>" ID="cmdDelete">
+                                    <span class="icon"><i class="fas fa-trash"></i></span>
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </telerik:GridTemplateColumn>
+                    </Columns>       
+                    <PagerStyle Mode="NextPrevNumericAndAdvanced" AlwaysVisible="true" PagerTextFormat="{4}<strong>{5}</strong> Records matching your search criteria"
+                        PageSizeLabelText="Records per page:" CssClass="RadGrid_Default rgPagerTextBox" />
+                </MasterTableView>
+                <ClientSettings EnableRowHoverStyle="true" AllowColumnsReorder="true" ReorderColumnsOnClient="true" AllowColumnHide="true" ColumnsReorderMethod="Reorder" >
+                    <Selecting AllowRowSelect="true" EnableDragToSelectRows="false" UseClientSelectColumnOnly="true" />
+                    <Scrolling AllowScroll="true" SaveScrollPosition="true" UseStaticHeaders="true" EnableNextPrevFrozenColumns="true" FrozenColumnsCount="2" EnableColumnClientFreeze="true" />
+                    <Resizing EnableRealTimeResize="true" AllowResizeToFit="true" AllowColumnResize="true" />
+                </ClientSettings>
+            </telerik:RadGrid>
+        </telerik:RadAjaxPanel>
+    </form>
+</body>
+</html>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RegisterVesselManagerMapping.aspx.cs
+
+
+using SouthNests.Phoenix.Framework;
+using SouthNests.Phoenix.Registers;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Telerik.Web.UI;
+
+public partial class Registers_RegisterPrimaryManager : System.Web.UI.Page
+{
+
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        try
+        {
+            PhoenixToolbar toolbar = new PhoenixToolbar(); 
+            toolbar.AddFontAwesomeButton("../Registers/RegisterVesselManagerMapping.aspx", "Export to Excel", "<i class=\"fas fa-file-excel\"></i>", "Excel");
+            toolbar.AddFontAwesomeButton("javascript:CallPrint('gvPrimaryManager')", "Print Grid", "<i class=\"fas fa-print\"></i>", "PRINT");
+            toolbar.AddFontAwesomeButton("javascript:openNewWindow('codehelpactivity','Add Primary Manager','Registers/RegisterVesselManagerMappingAdd.aspx',false,700,250)", "Add", "<i class=\"fa fa-plus-circle\"></i>", "ADDBASICCAUSE");
+            VesselManagerMappingTab.AccessRights = this.ViewState;
+            VesselManagerMappingTab.MenuList = toolbar.Show();
+        }      
+        catch(Exception ex)
+        {
+            ucError.ErrorMessage = ex.Message;
+            ucError.Visible = true;
+        }
+    }
+
+   
+    protected void ShowExcel()
+    {
+        int iRowCount = 0;
+        int iTotalPageCount = 0;
+        DataSet ds = new DataSet();
+
+        string[] alColumns = { "FLDNAME", "FLDSHORTCODE" , "FLDTYPE" };
+        string[] alCaptions = { "Address Code", "Company ID", "Type" };
+
+        string sortexpression;
+        int? sortdirection = null;
+
+        sortexpression = (ViewState["SORTEXPRESSION"] == null) ? null : (ViewState["SORTEXPRESSION"].ToString());
+        if (ViewState["SORTDIRECTION"] != null)
+            sortdirection = Int32.Parse(ViewState["SORTDIRECTION"].ToString());
+
+        if (ViewState["ROWCOUNT"] == null || Int32.Parse(ViewState["ROWCOUNT"].ToString()) == 0)
+            iRowCount = 10;
+        else
+            iRowCount = Int32.Parse(ViewState["ROWCOUNT"].ToString());
+
+
+
+        Response.AddHeader("Content-Disposition", "attachment; filename=VesselManagerMapping.xls");
+        Response.ContentType = "application/vnd.msexcel";
+        Response.Write("<TABLE BORDER='0' CELLPADDING='2' CELLSPACING='0' width='100%'>");
+        Response.Write("<tr>");
+        Response.Write("<td><img src='http://" + Request.Url.Authority + Session["images"] + "/esmlogo4_small.png' /></td>");
+        Response.Write("<td><h3>Vessel Manager Mapping</h3></td>");
+        Response.Write("<td colspan='" + (alColumns.Length - 2).ToString() + "'>&nbsp;</td>");
+        Response.Write("</tr>");
+        Response.Write("</TABLE>");
+        Response.Write("<br />");
+        Response.Write("<TABLE BORDER='1' CELLPADDING='2' CELLSPACING='2' width='100%'>");
+        Response.Write("<tr>");
+        //  ds = PhoenixRegisterVessellManagerMapping.PrimaryManagerSearch(
+        //    null,
+        //    null,
+        //    null,
+        //    sortexpression,
+        //    sortdirection,
+        //    iRowCount,
+        //    gvPrimaryManager.PageSize,
+        //    ref iRowCount,
+        //    ref iTotalPageCount
+        //);
+        ds = PhoenixRegisterVessellManagerMapping. ListPrimaryManagers(PhoenixSecurityContext.CurrentSecurityContext.UserCode);
+
+        for (int i = 0; i < alCaptions.Length; i++)
+        {
+            Response.Write("<td width='33%'>");
+            Response.Write("<b>" + alCaptions[i] + "</b>");
+            Response.Write("</td>");
+        }
+        Response.Write("</tr>");
+
+
+        foreach (DataRow dr in ds.Tables[0].Rows)
+        {
+            Response.Write("<tr>");
+            for (int i = 0; i < alColumns.Length; i++)
+            {
+                Response.Write("<td>");
+                Response.Write(dr[alColumns[i]]);
+                Response.Write("</td>");
+            }
+            Response.Write("</tr>");
+        }
+
+        Response.Write("</TABLE>");
+        Response.End();
+    }
+
+
+    protected void VesselManagerMapping_TabStripCommand(object sender, EventArgs e)
+    {
+        try
+        {
+            RadToolBarEventArgs dce = (RadToolBarEventArgs)e;
+            string CommandName = ((RadToolBarButton)dce.Item).CommandName;
+            if (CommandName.ToUpper().Equals("EXCEL"))
+            {
+                ShowExcel();
+            }
+        }
+        catch (Exception ex)
+        {
+            ucError.ErrorMessage = ex.Message;
+            ucError.Visible = true;
+        }
+    }
+
+    protected void gvPrimaryManager_NeedDataSource(object sender, GridNeedDataSourceEventArgs e)
+    {
+        DataSet ds = PhoenixRegisterVessellManagerMapping.ListPrimaryManagers(PhoenixSecurityContext.CurrentSecurityContext.UserCode);
+        gvPrimaryManager.DataSource = ds;
+        
+    }
+
+
+    protected void gvPrimaryManager_ItemDataBound(object sender, GridItemEventArgs e)
+    {
+        LinkButton ed = (LinkButton)e.Item.FindControl("cmdEdit");
+        GridDataItem item = e.Item as GridDataItem;
+        if (e.Item is GridDataItem)                                                  
+        {
+            LinkButton del = (LinkButton)e.Item.FindControl("cmdDelete"); 
+            if (del != null)
+            {
+                del.Visible = SessionUtil.CanAccess(this.ViewState, del.CommandName);
+                del.Attributes.Add("onclick", "return fnConfirmDelete(event); return false;");
+            }
+        }
+            if (item != null)
+        {
+            object mappingIdValue = item.GetDataKeyValue("FLDMAPPINGID");
+            string mappingId = mappingIdValue != null ? mappingIdValue.ToString() : string.Empty;
+            if (ed != null)
+            {
+                ed.Attributes.Add("onclick", "openNewWindow('PrimaryManagerEdit', 'Edit Primary Manager', '" + Session["sitepath"] + "/Registers/RegisterVesselManagerMappingAdd.aspx?MappingId=" + mappingId + "', false, 700, 250); return;");
+            }
+        }
+    }
+
+    private void BindData()
+    {
+        int iRowCount = 0;
+        int iTotalPageCount = 0;
+        string[] alColumns = { "FLDADDRESSCODE", "FLDCOMPANYID", "FLDTYPE" };
+        string[] alCaptions = { "Address Code", "Company Code", "Type" };
+        DataSet ds = new DataSet();
+        string sortexpression = (ViewState["SORTEXPRESSION"] == null) ? "FLDADDRESSCODE" : ViewState["SORTEXPRESSION"].ToString();
+        int? sortdirection = (ViewState["SORTDIRECTION"] != null) ? General.GetNullableInteger(ViewState["SORTDIRECTION"].ToString()) : 0;
+        int pageNumber = (ViewState["PAGENUMBER"] != null) ? Convert.ToInt32(ViewState["PAGENUMBER"]) : 1;
+        //int pageSize = (ViewState["PAGESIZE"] != null) ? Convert.ToInt32(ViewState["PAGESIZE"]) : 10;  
+        ds = PhoenixRegisterVessellManagerMapping.PrimaryManagerSearch(    
+            null,    
+            null,  
+            null,    
+            sortexpression,
+            sortdirection,
+            pageNumber,
+            gvPrimaryManager.PageSize,
+            ref iRowCount,
+            ref iTotalPageCount
+        );
+        General.SetPrintOptions("gvPrimaryManagers", "Primary Managers", alCaptions, alColumns, ds);
+
+
+        if (ds.Tables[0].Rows.Count > 0)
+        {
+            gvPrimaryManager.DataSource = ds;
+            gvPrimaryManager.VirtualItemCount = iRowCount;
+        }
+        else
+        {
+            gvPrimaryManager.DataSource = null;
+        }
+        ViewState["ROWCOUNT"] = iRowCount;
+        ViewState["TOTALPAGECOUNT"] = iTotalPageCount;
+    }
+
+    protected void cmdSearch_Click(object sender, EventArgs e)
+    {
+        ViewState["PAGENUMBER"] = 1;
+        BindData();
+        gvPrimaryManager.Rebind();
+    }
+    public StateBag ReturnViewState()
+    {
+        return ViewState;
+    }
+    protected void gvPrimaryManager_PageIndexChanged(object sender, GridPageChangedEventArgs e)
+    {
+        ViewState["PAGENUMBER"] = e.NewPageIndex + 1;
+        BindData();
+        gvPrimaryManager.Rebind();
+    }
+
+    protected void gvPrimaryManager_SortCommand(object sender, GridSortCommandEventArgs e)
+    {
+        ViewState["SORTEXPRESSION"] = e.SortExpression;
+        ViewState["SORTDIRECTION"] = e.NewSortOrder == GridSortOrder.Ascending ? 0 : 1;
+        BindData();
+        gvPrimaryManager.Rebind();
+    }
+
+
+    protected void gvPrimaryManager_ItemCommand(object sender, GridCommandEventArgs e)
+    {
+        try
+        {
+            if (e.CommandName.ToUpper().Equals("DELETE"))
+            {
+                GridDataItem item = e.Item as GridDataItem;
+                Guid mappingId = new Guid(item.GetDataKeyValue("FLDMAPPINGID").ToString());
+                PhoenixRegisterVessellManagerMapping.DeletePrimaryManager(PhoenixSecurityContext.CurrentSecurityContext.UserCode,
+                                                                          mappingId);
+                gvPrimaryManager.Rebind();
+
+            }            
+        }
+        catch(Exception ex)
+        {
+            ucError.ErrorMessage = ex.Message;
+            ucError.Visible = true;
+        }
+    }
+
+    
+
+    protected void cmdHiddenSubmit_Click(object sender, EventArgs e)
+    {
+        gvPrimaryManager.Rebind();
+    }
+
+
+}                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RegisterVesselManagerMappingAdd.aspx
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="RegisterVesselManagerMappingAdd.aspx.cs" Inherits="Registers_RegisterPrimaryManagerAdd" %>
+
+<%@ Import Namespace="SouthNests.Phoenix.Registers" %>
+<%@ Register TagPrefix="eluc" TagName="TabStrip" Src="~/UserControls/UserControlTabsTelerik.ascx" %>
+<%@ Register TagPrefix="eluc" TagName="Error" Src="~/UserControls/UserControlErrorMessage.ascx" %>
+<%@ Register TagPrefix="eluc" TagName="Status" Src="~/UserControls/UserControlStatus.ascx" %>
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+     <telerik:RadCodeBlock ID="Radcodeblock1" runat="server">
+        <%: Scripts.Render("~/bundles/js") %>
+        <%: Styles.Render("~/bundles/css") %>
+    </telerik:RadCodeBlock>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <telerik:RadScriptManager runat="server" ID="RadScriptManager1"></telerik:RadScriptManager>
+        <telerik:RadSkinManager ID="RadSkinManager1" runat="server" />
+        <telerik:RadAjaxPanel ID="RadAjaxPanel1" runat="server">
+            <eluc:TabStrip ID="ManagerHeader" runat="server" OnTabStripCommand="ManagerHeader_TabStripCommand" Title=""></eluc:TabStrip>
+            <eluc:Error ID="ucError" runat="server" Text="" Visible="false"></eluc:Error>
+            <eluc:Status runat="server" ID="ucStatus" />
+            <table class="auto-style4">               
+                <tr>
+                    <td class="auto-style3">
+                           <telerik:RadLabel  runat="server" ID="lblPrimaryManager" Text="Primary Manager"></telerik:RadLabel>     
+                    </td>
+                    <td>
+                        <telerik:RadComboBox runat="server" Filter="Contains" ID="ddPrimaryManager" DefaultMessage="Select Manager" DataTextField="FLDNAME" DataValueField="FLDADDRESSCODE"></telerik:RadComboBox>
+                   </td>
+                </tr>
+                <tr>
+                    <td class="auto-style3">
+                        <telerik:RadLabel ID="lblCompanyName" runat="server" Text="Company Name"></telerik:RadLabel>
+                    </td>
+                    <td>
+                        <telerik:RadComboBox runat="server" Filter="Contains" ID="ddCompanyName" DefaultMessage="Select Company Name" DataTextField="FLDSHORTCODE" DataValueField="FLDCOMPANYID" ></telerik:RadComboBox>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <telerik:RadLabel ID="lblType" runat="server" Text="Type"></telerik:RadLabel>
+                    </td>
+                    <td>
+                        <telerik:RadTextBox runat="server" ID="txtType"  ></telerik:RadTextBox>
+                    </td>
+                </tr>
+                 <tr>
+
+                </tr>
+                <tr>
+                    <telerik:RadLabel ID="lblMessage" runat="server"></telerik:RadLabel>
+                </tr>
+            </table>
+        </telerik:RadAjaxPanel>
+    </form>
+</body>
+</html>
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+RegisterVesselManagerMappingAdd.aspx.cs
+
+using SouthNests.Phoenix.Framework;
+using SouthNests.Phoenix.Registers;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using Telerik.Web.UI;
+
+public partial class Registers_RegisterPrimaryManagerAdd : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            PhoenixToolbar toolbar = new PhoenixToolbar();
+            toolbar.AddButton("Save", "SAVE", ToolBarDirection.Right);
+            ManagerHeader.AccessRights = this.ViewState;
+            ManagerHeader.MenuList = toolbar.Show();
+            ViewState["MappingId"] = string.Empty;
+            BindDropDownList();
+            BindDropDownList1();
+
+            if (Request.QueryString["MappingId"] != null && Request.QueryString["MappingId"].ToString() != String.Empty)
+            {
+                ViewState["MappingId"] = Request.QueryString["MappingId"];
+                string mappingIdStr = Request.QueryString["MappingId"];
+                Guid? mappingId = General.GetNullableGuid(mappingIdStr);
+                if (mappingId.HasValue && mappingId.Value != Guid.Empty)
+                {
+                    BindManagerData(mappingId.Value);
+                }
+            }
+        }
+    }
+    private void BindManagerData(Guid mappingId)
+    {
+        DataSet ds = PhoenixRegisterVessellManagerMapping.ShowPrimaryManagers(mappingId);
+
+        if (ds.Tables[0].Rows.Count > 0)
+        {
+            ddPrimaryManager.SelectedValue = ds.Tables[0].Rows[0]["FLDADDRESSCODE"].ToString();
+            ddCompanyName.SelectedValue = ds.Tables[0].Rows[0]["FLDCOMPANYID"].ToString();
+            txtType.Text = ds.Tables[0].Rows[0]["FLDTYPE"].ToString();
+        }
+    }
+    protected void ManagerHeader_TabStripCommand(object sender, EventArgs e)
+    {
+        try
+        {
+            RadToolBarEventArgs dce = (RadToolBarEventArgs)e;
+            string CommandName = ((RadToolBarButton)dce.Item).CommandName;
+
+            if (CommandName.ToUpper().Equals("SAVE"))
+            {
+                int primaryManagerId = int.Parse(ddPrimaryManager.SelectedValue);
+                int companyId = int.Parse(ddCompanyName.SelectedValue);
+                string type = txtType.Text.Trim();  
+
+                if (IsValidVesselManagerMapping(primaryManagerId, companyId, type))
+                {                       
+                    if (General.GetNullableGuid(ViewState["MappingId"].ToString()) != null)
+                    {
+                        Guid mappingId = Guid.Parse(ViewState["MappingId"].ToString());
+
+                        PhoenixRegisterVessellManagerMapping.UpdatePrimaryManager(
+                            PhoenixSecurityContext.CurrentSecurityContext.UserCode,
+                            mappingId,
+                            primaryManagerId,
+                            companyId,
+                            string.IsNullOrEmpty(type) ? 0 : Convert.ToInt32(type)
+                        );
+                        ucStatus.Text = "Primary Manager successfully updated!";
+                        ucStatus.Visible = true;
+                        String script = String.Format("javascript:fnReloadList('codehelpactivity','',null);");
+                        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "script", script, true);
+
+                    }
+                    else
+                    {
+                        PhoenixRegisterVessellManagerMapping.InsertPrimaryManager(
+                            PhoenixSecurityContext.CurrentSecurityContext.UserCode,
+                            primaryManagerId,
+                            companyId,
+                            string.IsNullOrEmpty(type) ? (int?)null : Convert.ToInt32(type)
+                        );
+                        ucStatus.Text = "Primary Manager successfully saved!";
+                        ucStatus.Visible = true;
+                        String script = String.Format("javascript:fnReloadList('codehelpactivity','',null);");
+                        ScriptManager.RegisterStartupScript(Page, Page.GetType(), "script", script, true);
+                    }                    
+                }               
+            }
+        }
+        catch (Exception ex)
+        {
+            ucError.ErrorMessage = ex.Message;
+            ucError.Visible = true;
+        }
+    }
+
+    public bool IsValidVesselManagerMapping(int primaryManagerID, int companyID, string type)
+    {
+        int primaryManagerId = int.Parse(ddPrimaryManager.SelectedValue);
+        int companyId = int.Parse(ddCompanyName.SelectedValue);
+        bool isValid = true;
+        ucError.HeaderMessage = "Please provide the following required information";
+        if (primaryManagerId == 0)
+        {
+            ucError.ErrorMessage = "Please select a Primary Manager.";
+            isValid = false;
+        }
+        if (companyId == 0)
+        {
+            ucError.ErrorMessage = "Please select a Company Name.";
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    public bool CheckIfPrimaryManagerExists(int primaryManagerId, int companyId)
+    {
+        List<SqlParameter> ParameterList = new List<SqlParameter>();
+        ParameterList.Add(DataAccess.GetDBParameter("@PrimaryManagerId", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, primaryManagerId));
+        ParameterList.Add(DataAccess.GetDBParameter("@CompanyId", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, companyId));
+        DataSet ds = DataAccess.ExecSPReturnDataSet("PRPRIMARYMANAGERLIST", ParameterList);
+        return ds.Tables[0].Rows.Count > 0;
+    }
+
+    protected void txtPrimaryManager_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+    protected void BindDropDownList()
+    {
+        DataSet ds = PhoenixRegistersAddress.ListAddress("126");
+        ddPrimaryManager.DataSource = ds;
+        ddPrimaryManager.DataBind();
+    }
+
+    protected void BindDropDownList1()
+    {
+        DataSet ds = PhoenixRegistersCompany.ListCompany();
+        ddCompanyName.DataSource = ds;
+        ddCompanyName.DataBind();
+    }
+
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+TBLDMSVESSELMANAGERMAPPING:
+
+CREATE TABLE TBLDMSVESSELMANAGERMAPPING
+(	
+	  FLDMAPPINGID			UNIQUEIDENTIFIER	NOT NULL   
+	, FLDADDRESSCODE		BIGINT				NULL
+	, FLDTYPE				INT					NULL		--> 1 ESM PTE LTD, 2- OFFSHORE
+	, FLDCOMPANYID			INT					NULL
+	, FLDCREATEDDATE		DATETIME			NOT NULL
+	, FLDCREATEDBY			INT					NOT NULL
+	, FLDMODIFIEDDATE		DATETIME			NOT NULL
+	, FLDMODIFIEDBY			INT					NOT NULL
+	, FLDDTKEY				UNIQUEIDENTIFIER	NOT NULL	CONSTRAINT DF_TBLDMSVESSELMANAGERMAPPING_FLDDTKEY DEFAULT(NEWSEQUENTIALID())	
+) 
+
+TBLAUDITDMSVESSELMANAGERMAPPING:
+
+CREATE TABLE TBLAUDITDMSVESSELMANAGERMAPPING
+(	
+	  FLDAUDITTYPE			TINYINT				NOT NULL
+	, FLDAUDITUSERCODE		INT					NOT NULL
+	, FLDAUDITDATETIME		DATETIME			NOT NULL
+	, FLDAUDITPROCEDURE		VARCHAR(128)		NOT NULL
+	, FLDAUDITTRANSFERDATE	DATETIME			NULL
+	, FLDMAPPINGID			UNIQUEIDENTIFIER	NOT NULL   
+	, FLDADDRESSCODE		BIGINT				NULL
+	, FLDTYPE				INT					NULL
+	, FLDCOMPANYID			INT					NULL
+	, FLDCREATEDDATE		DATETIME			NOT NULL
+	, FLDCREATEDBY			INT					NOT NULL
+	, FLDMODIFIEDDATE		DATETIME			NOT NULL
+	, FLDMODIFIEDBY			INT					NOT NULL
+	, FLDDTKEY				UNIQUEIDENTIFIER	NOT NULL
+) 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+insert sp:
+
+--exec PRSIREPIQSECTIONINSERT 1,null,1,1,'ABC','SECTION TEST !','323,385','2174848d-55b8-ef11-8685-b24400711941'
+--select * from TBLSIREPIQSECTION
+ALTER PROCEDURE PRSIREPIQSECTIONINSERT
+(
+	 @ROWUSERCODE					INT
+	, @PARENTID						UNIQUEIDENTIFIER   = NULL
+	, @ACTIVEYN						TINYINT
+	, @VESSELTYPE					TINYINT
+	, @SECTIONCODE                  VARCHAR(20)
+	, @SECTIONNAME                  VARCHAR(500)
+	, @VESSELTYPESPECIFIED          VARCHAR(MAX) 
+	, @SIREPIQID					UNIQUEIDENTIFIER
+)
+AS 
+BEGIN 
+	SET NOCOUNT ON;
+
+	DECLARE @SIREPIQSECTIONID	UNIQUEIDENTIFIER
+
+	EXEC PRNEWSEQUENTIALID @SIREPIQSECTIONID OUT
+	
+	INSERT INTO TBLSIREPIQSECTION
+	(	FLDSIREPIQSECTIONID
+		,FLDPARENTID
+		,FLDACTIVEYN
+		,FLDVESSELTYPE
+		,FLDSIREPIQSECTIONCODE
+        ,FLDSIREPIQSECTIONNAME
+        ,FLDVESSELTYPESPECIFIED
+		,FLDCREATEDBY
+		,FLDCREATEDDATE
+		,FLDMODIFIEDBY
+		,FLDMODIFIEDDATE
+		,FLDSIREPIQID
+	)
+	OUTPUT 0, @ROWUSERCODE, GETUTCDATE(), OBJECT_NAME(@@PROCID), NULL,INSERTED.* INTO TBLAUDITSIREPIQSECTION
+	SELECT 
+			@SIREPIQSECTIONID
+			,@PARENTID			
+			,@ACTIVEYN			
+			,@VESSELTYPE
+			,@SECTIONCODE      
+            ,@SECTIONNAME         
+            ,@VESSELTYPESPECIFIED
+			,@ROWUSERCODE
+			,GETUTCDATE()
+			,@ROWUSERCODE
+			,GETUTCDATE()
+			,@SIREPIQID
+END
+
+select * from TBLSIREPIQSECTION
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+update sp:
+
+CREATE PROCEDURE PRPRIMARYMANAGERUPDATE
+(
+	  @ROWUSERCODE	INT
+	, @MAPPINGID	UNIQUEIDENTIFIER
+	, @ADDRESSCODE	BIGINT
+	, @COMPANYID	INT
+	, @TYPE			INT
+)
+AS
+BEGIN
+	UPDATE TBLDMSVESSELMANAGERMAPPING SET 
+		   FLDADDRESSCODE = @ADDRESSCODE
+		 , FLDCOMPANYID  = @COMPANYID
+		 , FLDTYPE = @TYPE
+	OUTPUT 1, @ROWUSERCODE, GETUTCDATE(), OBJECT_NAME(@@PROCID),NULL,  INSERTED.* INTO TBLAUDITDMSVESSELMANAGERMAPPING
+	WHERE FLDMAPPINGID = @MAPPINGID
+END
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+delete sp:
+
+CREATE PROCEDURE PRPRIMARYMANAGERDELETE
+(
+	  @ROWUSERCODE	INT
+	, @MAPPINGID	UNIQUEIDENTIFIER
+)
+AS
+BEGIN
+	DELETE FROM TBLDMSVESSELMANAGERMAPPING
+	OUTPUT 2, @ROWUSERCODE, GETUTCDATE(), OBJECT_NAME(@@PROCID), NULL, DELETED.* INTO TBLAUDITDMSVESSELMANAGERMAPPING
+	WHERE FLDMAPPINGID = @MAPPINGID
+END
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+list sp:
+
+CREATE PROCEDURE PRPRIMARYMANAGERLIST
+(
+	@ROWUSERCODE	INT
+)
+AS 
+BEGIN
+	SELECT A.FLDADDRESSCODE,B.FLDNAME,A.FLDCOMPANYID,C.FLDSHORTCODE,FLDTYPE	
+	FROM TBLDMSVESSELMANAGERMAPPING A(NOLOCK)
+	INNER JOIN TBLADDRESS B(NOLOCK)
+	ON A.FLDADDRESSCODE = B.FLDADDRESSCODE
+	INNER JOIN TBLCOMPANY  C(NOLOCK)
+	ON A.FLDCOMPANYID = C.FLDCOMPANYID
+END
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+search sp:
+
+CREATE PROCEDURE PRPRIMARYMANAGERSEARCH
+(
+    @ADDRESSCODE     BIGINT = NULL,
+    @COMPANYID       INT = NULL,
+    @TYPE            INT = NULL,
+    @SORTBY          VARCHAR(50) = 'FLDADDRESSCODE', 
+    @SORTDIRECTION   TINYINT = 0, 
+    @PAGENUMBER      INT,
+    @PAGESIZE        INT,
+    @RESULTCOUNT      INT OUTPUT,
+    @TOTALPAGECOUNT   INT OUTPUT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @ROWFROM BIGINT;
+    DECLARE @ROWTO BIGINT;
+
+   
+    DECLARE @TEMPTABLE TABLE
+    (
+        FLDMAPPINGID UNIQUEIDENTIFIER,
+        FLDROWNUMBER BIGINT IDENTITY(1,1)
+    );
+
+    IF @SORTDIRECTION = 0 
+    BEGIN
+        INSERT INTO @TEMPTABLE (FLDMAPPINGID)
+        SELECT A.FLDMAPPINGID
+        FROM TBLDMSVESSELMANAGERMAPPING A (NOLOCK)
+        WHERE 
+            (@ADDRESSCODE IS NULL OR A.FLDADDRESSCODE = @ADDRESSCODE) AND
+            (@COMPANYID IS NULL OR A.FLDCOMPANYID = @COMPANYID) AND
+            (@TYPE IS NULL OR A.FLDTYPE = @TYPE)
+        ORDER BY
+            CASE
+                WHEN @SORTBY = 'FLDADDRESSCODE' THEN A.FLDADDRESSCODE
+                WHEN @SORTBY = 'FLDCOMPANYID' THEN A.FLDCOMPANYID
+                WHEN @SORTBY = 'FLDTYPE' THEN A.FLDTYPE
+                ELSE A.FLDADDRESSCODE
+            END;
+    END
+    ELSE 
+    BEGIN
+        INSERT INTO @TEMPTABLE (FLDMAPPINGID)
+        SELECT A.FLDMAPPINGID
+        FROM TBLDMSVESSELMANAGERMAPPING A (NOLOCK)
+        WHERE 
+            (@ADDRESSCODE IS NULL OR A.FLDADDRESSCODE = @ADDRESSCODE) AND
+            (@COMPANYID IS NULL OR A.FLDCOMPANYID = @COMPANYID) AND
+            (@TYPE IS NULL OR A.FLDTYPE = @TYPE)
+        ORDER BY
+            CASE
+                WHEN @SORTBY = 'FLDADDRESSCODE' THEN A.FLDADDRESSCODE
+                WHEN @SORTBY = 'FLDCOMPANYID' THEN A.FLDCOMPANYID
+                WHEN @SORTBY = 'FLDTYPE' THEN A.FLDTYPE
+                ELSE A.FLDADDRESSCODE
+            END DESC;
+    END
+
+    SET @RESULTCOUNT = @@ROWCOUNT;
+    SET @TOTALPAGECOUNT = (SELECT CEILING(@RESULTCOUNT * 1.0 / @PAGESIZE));
+	SET @ROWFROM = (@PAGENUMBER - 1) * @PAGESIZE + 1;
+    SET @ROWTO = @PAGENUMBER * @PAGESIZE;
+
+
+    SELECT
+        A.FLDMAPPINGID,
+        A.FLDADDRESSCODE,
+        B.FLDNAME AS AddressName,
+        A.FLDCOMPANYID,
+        C.FLDSHORTCODE AS CompanyCode,
+        A.FLDTYPE
+    FROM @TEMPTABLE T
+    INNER JOIN TBLDMSVESSELMANAGERMAPPING A (NOLOCK)
+        ON T.FLDMAPPINGID = A.FLDMAPPINGID
+    INNER JOIN TBLADDRESS B (NOLOCK)
+        ON A.FLDADDRESSCODE = B.FLDADDRESSCODE
+    INNER JOIN TBLCOMPANY C (NOLOCK)
+        ON A.FLDCOMPANYID = C.FLDCOMPANYID
+    WHERE T.FLDROWNUMBER BETWEEN @ROWFROM AND @ROWTO
+    ORDER BY T.FLDROWNUMBER;
+
+END;
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+app_code:
+
+using SouthNests.Phoenix.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+
+/// <summary>
+/// Summary description for PhoenixRegisterPrimaryManager
+/// </summary>
+
+namespace SouthNests.Phoenix.Registers 
+{
+    public class PhoenixRegisterVessellManagerMapping
+    {
+        public PhoenixRegisterVessellManagerMapping()
+        {
+        }
+        public static void InsertPrimaryManager(int rowUserCode, long addressCode, int companyId, int? type)
+        {
+            List<SqlParameter> ParameterList = new List<SqlParameter>();
+            ParameterList.Add(DataAccess.GetDBParameter("@ROWUSERCODE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, rowUserCode));
+            ParameterList.Add(DataAccess.GetDBParameter("@ADDRESSCODE", SqlDbType.BigInt, DbConstant.BIGINT, ParameterDirection.Input, addressCode));
+            ParameterList.Add(DataAccess.GetDBParameter("@COMPANYID", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, companyId));
+            ParameterList.Add(DataAccess.GetDBParameter("@TYPE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, type));
+
+            DataAccess.ExecSPReturnInt("PRPRIMARYMANAGERINSERT", ParameterList);
+        }
+        public static void UpdatePrimaryManager(int rowUserCode, Guid mappingId, long addressCode, int companyId, int type)
+        {
+            List<SqlParameter> ParameterList = new List<SqlParameter>();
+            ParameterList.Add(DataAccess.GetDBParameter("@ROWUSERCODE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, rowUserCode));
+            ParameterList.Add(DataAccess.GetDBParameter("@MAPPINGID", SqlDbType.UniqueIdentifier, DbConstant.UNIQUEIDENTIFIER, ParameterDirection.Input, mappingId));
+            ParameterList.Add(DataAccess.GetDBParameter("@ADDRESSCODE", SqlDbType.BigInt, DbConstant.BIGINT, ParameterDirection.Input, addressCode));
+            ParameterList.Add(DataAccess.GetDBParameter("@COMPANYID", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, companyId));
+            ParameterList.Add(DataAccess.GetDBParameter("@TYPE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, type));
+
+            DataAccess.ExecSPReturnInt("PRPRIMARYMANAGERUPDATE", ParameterList);
+        }
+        public static void DeletePrimaryManager(int rowUserCode, Guid mappingId)
+        {
+            List<SqlParameter> ParameterList = new List<SqlParameter>();
+            ParameterList.Add(DataAccess.GetDBParameter("@ROWUSERCODE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, rowUserCode));
+            ParameterList.Add(DataAccess.GetDBParameter("@MAPPINGID", SqlDbType.UniqueIdentifier, DbConstant.UNIQUEIDENTIFIER, ParameterDirection.Input, mappingId));
+
+            DataAccess.ExecSPReturnInt("PRPRIMARYMANAGERDELETE", ParameterList);
+        }
+        public static DataSet ListPrimaryManagers(int rowUserCode)
+        {
+            List<SqlParameter> ParameterList = new List<SqlParameter>();
+            ParameterList.Add(DataAccess.GetDBParameter("@ROWUSERCODE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, rowUserCode));
+
+            return DataAccess.ExecSPReturnDataSet("PRPRIMARYMANAGERLIST", ParameterList);
+        }
+
+        public static DataSet ShowPrimaryManagers(Guid mappingId)
+        {
+            List<SqlParameter> ParameterList = new List<SqlParameter>();
+            ParameterList.Add(DataAccess.GetDBParameter("@MAPPINGID", SqlDbType.UniqueIdentifier, DbConstant.UNIQUEIDENTIFIER, ParameterDirection.Input, mappingId));
+            return DataAccess.ExecSPReturnDataSet("PRPRIMARYMANAGERSHOW", ParameterList);
+        }
+
+        public DataSet EditPrimaryManagers(Guid mappingId)
+        {
+            DataSet ds = new DataSet();
+            List<SqlParameter> ParameterList = new List<SqlParameter>();
+            ds = DataAccess.ExecSPReturnDataSet("PRPRIMARYMANAGERLIST", ParameterList);
+            return ds;
+        }
+
+        public static DataSet PrimaryManagerSearch(long? addressCode,int? companyId , int? type , string sortBy, int? sortDirection, 
+                                                    int pageNumber, int pageSize , ref int resultCount, ref int totalPageCount)
+        {
+            DataSet ds = new DataSet();
+            List<SqlParameter> ParameterList = new List<SqlParameter>();
+            ParameterList.Add(DataAccess.GetDBParameter("@ADDRESSCODE", SqlDbType.BigInt, DbConstant.BIGINT, ParameterDirection.Input, addressCode));
+            ParameterList.Add(DataAccess.GetDBParameter("@COMPANYID", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, companyId));
+            ParameterList.Add(DataAccess.GetDBParameter("@TYPE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, type));
+            ParameterList.Add(DataAccess.GetDBParameter("@SORTBY", SqlDbType.VarChar, DbConstant.VARCHAR_50, ParameterDirection.Input, sortBy));
+            ParameterList.Add(DataAccess.GetDBParameter("@SORTDIRECTION", SqlDbType.TinyInt, DbConstant.TINYINT, ParameterDirection.Input, sortDirection));
+            ParameterList.Add(DataAccess.GetDBParameter("@PAGENUMBER", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, pageNumber));
+            ParameterList.Add(DataAccess.GetDBParameter("@PAGESIZE", SqlDbType.Int, DbConstant.INT, ParameterDirection.Input, pageSize));
+            ParameterList.Add(DataAccess.GetDBParameter("@RESULTCOUNT", SqlDbType.Int, DbConstant.INT, ParameterDirection.Output, resultCount));
+            ParameterList.Add(DataAccess.GetDBParameter("@TOTALPAGECOUNT", SqlDbType.Int, DbConstant.INT, ParameterDirection.Output, totalPageCount));
+            ds = DataAccess.ExecSPReturnDataSet("PRPRIMARYMANAGERSEARCH", ParameterList);
+            foreach (SqlParameter sp in ParameterList)
+            {
+                if (sp.Direction == ParameterDirection.Output)
+                {
+                    if (sp.ParameterName == "@RESULTCOUNT")
+                        resultCount = (int)sp.Value;
+
+                    if (sp.ParameterName == "@TOTALPAGECOUNT")
+                        totalPageCount = (int)sp.Value;
+                }
+            }
+            return ds;
+        }
+    }
+}
