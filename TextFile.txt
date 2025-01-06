@@ -17,3 +17,49 @@ public class PublicPrinter {
         }
     }
 }
+
+CREATE PROCEDURE GetRecentDocumentsAndForms
+AS
+BEGIN
+    -- Get the most recent revision for each document
+    WITH RecentDocumentRevisions AS (
+        SELECT 
+            FLDDOCUMENTID,
+            MAX(FLDREVISIONNUMBER) AS RecentRevision
+        FROM 
+            TBLDMSDOCUMENT
+        GROUP BY 
+            FLDDOCUMENTID
+    )
+
+    -- Get the most recent documents
+    SELECT 
+        d.FLDDOCUMENTID,
+        d.FLDDOCUMENTNAME,
+        d.FLDCREATEDDATE,
+        d.FLDMODIFIEDDATE,
+        d.FLDREVISIONNUMBER
+    FROM 
+        TBLDMSDOCUMENT d
+    INNER JOIN 
+        RecentDocumentRevisions r
+    ON 
+        d.FLDDOCUMENTID = r.FLDDOCUMENTID 
+        AND d.FLDREVISIONNUMBER = r.RecentRevision
+    WHERE 
+        d.FLDACTIVEYN = 1 -- Include only active documents
+
+    UNION ALL
+
+    -- Get all active forms (assuming forms don't have revisions)
+    SELECT 
+        f.FLDFORMID,
+        f.FLDFORMNAME,
+        f.FLDCREATEDDATE,
+        f.FLDMODIFIEDDATE,
+        NULL AS FLDREVISIONNUMBER -- Forms do not have revisions
+    FROM 
+        TBLFORMS f
+    WHERE 
+        f.FLDACTIVEYN = 1 -- Include only active forms
+END
